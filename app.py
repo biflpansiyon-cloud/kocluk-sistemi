@@ -30,7 +30,17 @@ except Exception as e:
 def check_login(username, password):
     users = worksheet_users.get_all_records()
     df_users = pd.DataFrame(users)
-    user = df_users[(df_users['Username'] == username) & (df_users['Password'] == str(password))]
+    
+    # HATA ÖNLEYİCİ: Her şeyi yazıya (string) çeviriyoruz ki 1234 ile "1234" eşit sayılsın.
+    df_users['Username'] = df_users['Username'].astype(str)
+    df_users['Password'] = df_users['Password'].astype(str)
+    
+    # Boşlukları temizleyelim (Admin boşluk vs olmasın)
+    username = str(username).strip()
+    password = str(password).strip()
+    
+    user = df_users[(df_users['Username'] == username) & (df_users['Password'] == password)]
+    
     if not user.empty:
         return user.iloc[0]
     return None
